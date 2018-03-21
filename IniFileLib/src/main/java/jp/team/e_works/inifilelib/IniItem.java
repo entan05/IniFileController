@@ -4,6 +4,7 @@ public class IniItem {
     private String section;
     private String key;
     private String value;
+    private String comment;
 
     public IniItem() {
         this(null, null, null);
@@ -39,6 +40,14 @@ public class IniItem {
         return value;
     }
 
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -48,6 +57,8 @@ public class IniItem {
         sb.append(this.key);
         sb.append(", value: ");
         sb.append(this.value);
+        sb.append(", comment: ");
+        sb.append(this.comment);
         sb.append("]");
         return sb.toString();
     }
