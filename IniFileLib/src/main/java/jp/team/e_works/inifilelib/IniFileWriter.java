@@ -1,12 +1,10 @@
 package jp.team.e_works.inifilelib;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,71 +29,62 @@ public class IniFileWriter {
     }
 
     public boolean write(String filePath) {
-        return write(filePath, Charset.defaultCharset(), MODE.ADD);
-    }
-
-    public boolean write(String filePath, Charset cs) {
-        return write(filePath, cs, MODE.ADD);
+        return write(filePath, MODE.ADD);
     }
 
     public boolean write(String filePath, MODE mode) {
-        return write(filePath, Charset.defaultCharset(), mode);
+        return writeProcess(filePath, mode);
     }
 
-    public boolean write(String filePath, Charset cs, MODE mode) {
-        if (mode == MODE.ADD) {
-            if (Files.exists(Paths.get(filePath))) {
+    public boolean writeProcess(String filePath, MODE mode) {
+        File file = new File(filePath);
+        if(mode == MODE.ADD) {
+            if(file.exists()) {
                 IniFileLoader loader = new IniFileLoader();
                 loader.load(filePath);
                 mItems.addAll(loader.getAllDataList());
 
-                try {
-                    Files.delete(Paths.get(filePath));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(!file.delete()) {
                     return false;
                 }
             }
         }
         Collections.sort(mItems, new IniItemComparator());
 
-        StringBuilder sb = new StringBuilder();
-        String nowSecttion = null;
-        for (IniItem item : mItems) {
-            if (nowSecttion == null && item.getSection() != null) {
-                if (sb.length() != 0) {
-                    sb.append("\n");
-                }
-                sb.append("[");
-                sb.append(item.getSection());
-                sb.append("]\n");
-
-                nowSecttion = item.getSection();
-            } else if (nowSecttion != null && !nowSecttion.equals(item.getSection())) {
-                sb.append("\n[");
-                sb.append(item.getSection());
-                sb.append("]\n");
-
-                nowSecttion = item.getSection();
-            }
-
-            // コメント行
-            if (item.getComment() != null) {
-                sb.append("# ");
-                sb.append(item.getComment());
-                sb.append("\n");
-            }
-            // key
-            sb.append(item.getKey());
-            sb.append("=");
-            // value
-            sb.append(item.getValue());
-            sb.append("\n");
-        }
-
         try {
-            Files.createFile(Paths.get(filePath));
-            Files.write(Paths.get(filePath), Arrays.asList(sb.toString()), cs, StandardOpenOption.WRITE);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+
+            String nowSection = null;
+            boolean isFirstLine = true;
+            for(IniItem item : mItems) {
+                // セクション行
+                if(nowSection == null && item.getSection() != null) {
+                    if(!isFirstLine) {
+                        bw.newLine();
+                    }
+                    bw.write("[" + item.getSection() + "]");
+                    bw.newLine();
+
+                    nowSection = item.getSection();
+                } else if(nowSection != null && !nowSection.equals(item.getSection())) {
+                    bw.newLine();
+                    bw.write("[" + item.getSection() + "]");
+                    bw.newLine();
+
+                    nowSection = item.getSection();
+                }
+
+                // コメント行
+                if(item.getComment() != null) {
+                    bw.write("# " + item.getComment());
+                    bw.newLine();
+                }
+                // key & value
+                bw.write(item.getKey() + "=" + item.getValue());
+                bw.newLine();
+
+                isFirstLine = false;
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return false;

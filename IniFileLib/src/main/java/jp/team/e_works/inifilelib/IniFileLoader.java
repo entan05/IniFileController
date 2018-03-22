@@ -1,10 +1,9 @@
 package jp.team.e_works.inifilelib;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,9 +15,6 @@ public class IniFileLoader {
 
     // ファイルパス
     private String mFilePath;
-
-    // 文字コード
-    private Charset mCharSet = StandardCharsets.UTF_8;
 
     // load完了しているか
     private boolean mIsLoaded = false;
@@ -35,20 +31,8 @@ public class IniFileLoader {
      * @return ロードに成功したかどうか
      */
     public boolean load(String filePath) {
-        return loadProcess(filePath, Charset.defaultCharset());
-    }
-
-    /**
-     * 指定したファイルを指定した文字コードのiniファイルとしてロードする
-     *
-     * @param filePath ファイルパス
-     * @param cs       文字コード
-     * @return ロードに成功したかどうか
-     */
-    public boolean load(String filePath, Charset cs) {
         mFilePath = filePath;
-        mCharSet = cs;
-        return loadProcess(mFilePath, mCharSet);
+        return loadProcess(filePath);
     }
 
     /**
@@ -57,18 +41,22 @@ public class IniFileLoader {
      * @return ロードに成功したかどうか
      */
     public boolean reload() {
-        return isEmpty(mFilePath) && loadProcess(mFilePath, mCharSet);
+        return isEmpty(mFilePath) && loadProcess(mFilePath);
     }
 
-    private boolean loadProcess(String filePath, Charset cs) {
+    private boolean loadProcess(String filePath) {
         try {
+            FileReader fileReader = new FileReader(new File(filePath));
+            BufferedReader br = new BufferedReader(fileReader);
+            String line = br.readLine();
+
             // セクション名
             String section = null;
             // コメント
             String comment = null;
             // キーバリュー
             HashMap<String, String> map = new HashMap<>();
-            for (String line : Files.readAllLines(Paths.get(filePath), cs)) {
+            while (line != null) {
                 // BOM取り除き処理
                 // todo
 
@@ -105,7 +93,10 @@ public class IniFileLoader {
                     map.put(key, value);
                     mDataMap.put(section, map);
                 }
+
+                line = br.readLine();
             }
+            br.close();
         } catch (IOException e) {
             mIsLoaded = false;
             return false;
@@ -118,7 +109,7 @@ public class IniFileLoader {
      * 読み込んだ結果を (section, (key, value)) の {@link HashMap} で返す
      *
      * @return 読み込んだ結果の {@link HashMap} 、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} or {@link #load(String, Charset)})を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public HashMap<String, HashMap<String, String>> getAllDataMap() {
@@ -132,7 +123,7 @@ public class IniFileLoader {
      * 読み込んだ結果を {@link IniItem} の {@link List} で返す
      *
      * @return 読み込んだ結果の {@link List} 、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} or {@link #load(String, Charset)})を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public List<IniItem> getAllDataList() {
@@ -159,7 +150,7 @@ public class IniFileLoader {
      *
      * @param section セクション指定
      * @return 読み込んだ結果の指定したセクション部、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} or {@link #load(String, Charset)})を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public HashMap<String, String> getSectionDataMap(String section) {
@@ -174,7 +165,7 @@ public class IniFileLoader {
      *
      * @param section セクション指定
      * @return 読み込んだ結果の指定したセクション部、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} or {@link #load(String, Charset)})を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public List<IniItem> getSectionDataList(String section) {
@@ -201,7 +192,7 @@ public class IniFileLoader {
      * @param section セクション指定
      * @param key     キー指定
      * @return 指定したセクション、指定したキーの値
-     * @throws NotLoadedException ロード処理({@link #load(String)} or {@link #load(String, Charset)})を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public String getValue(String section, String key) {
