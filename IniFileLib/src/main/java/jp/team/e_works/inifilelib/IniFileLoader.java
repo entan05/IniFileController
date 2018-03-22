@@ -66,6 +66,7 @@ public class IniFileLoader {
                 // 空行
                 if (isEmpty(line)) {
                     // no process
+                    line = br.readLine();
                     continue;
                 }
                 // コメント行
@@ -77,12 +78,14 @@ public class IniFileLoader {
                         comment += "\n";
                         comment += commentLine;
                     }
+                    line = br.readLine();
                     continue;
                 }
                 // セクション行
                 if (line.charAt(0) == '[' && line.charAt(line.length() - 1) == ']') {
                     section = line.substring(1, line.length() - 1);
                     map = new HashMap<>();
+                    line = br.readLine();
                     continue;
                 }
                 // パラメータ行
