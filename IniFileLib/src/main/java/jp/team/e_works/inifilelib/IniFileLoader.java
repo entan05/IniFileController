@@ -90,7 +90,7 @@ public class IniFileLoader {
                 }
                 // パラメータ行
                 if (line.length() >= 3 && line.contains("=") && line.length() > line.indexOf("=") + 1) {
-                    String key = line.substring(0, line.indexOf("=") - 1);
+                    String key = line.substring(0, line.indexOf("="));
                     String value = line.substring(line.indexOf("=") + 1);
 
                     map.put(key, value);
