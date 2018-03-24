@@ -56,4 +56,4 @@ dependencies {
 
 ## AndroidSample
 
-まだ
+[Androidでライブラリを使用したサンプル](https://github.com/entan05/IniFileControllerTest)
