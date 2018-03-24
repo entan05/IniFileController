@@ -3,10 +3,11 @@
   <groupId>jp.e_works</groupId>
   <artifactId>IniFileController</artifactId>
   <versioning>
-    <release>0.0.6</release>
+    <release>0.0.7dev</release>
     <versions>
       <version>0.0.6</version>
+      <version>0.0.7dev</version>
     </versions>
-    <lastUpdated>20180324051710</lastUpdated>
+    <lastUpdated>20180324095801</lastUpdated>
   </versioning>
 </metadata>
