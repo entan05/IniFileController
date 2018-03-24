@@ -15,7 +15,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${repo.absolutePath}"
-            pom.version = '0.0.4'
+            pom.version = '0.0.5'
             pom.groupId = 'jp.e_works'
             pom.artifactId = 'IniFileController'
         }
