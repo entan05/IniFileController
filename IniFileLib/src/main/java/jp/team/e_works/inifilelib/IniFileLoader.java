@@ -24,7 +24,7 @@ public class IniFileLoader {
     private boolean mIsLoaded = false;
 
     /**
-     * 指定したファイルをUTF-8のiniファイルとしてロードする
+     * 指定したファイルをロードする
      *
      * @param filePath ファイルパス
      * @return ロードに成功したかどうか
@@ -108,7 +108,7 @@ public class IniFileLoader {
      * 読み込んだ結果を (section, (key, IniItem)) の {@link HashMap} で返す
      *
      * @return 読み込んだ結果の {@link HashMap} 、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)})を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public HashMap<String, HashMap<String, IniItem>> getAllDataMap() {
@@ -122,7 +122,7 @@ public class IniFileLoader {
      * 読み込んだ結果を {@link IniItem} の {@link List} で返す
      *
      * @return 読み込んだ結果の {@link List} 、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)})を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public List<IniItem> getAllDataList() {
@@ -149,7 +149,7 @@ public class IniFileLoader {
      *
      * @param section セクション指定
      * @return 読み込んだ結果の指定したセクション部、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)})を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public Map<String, IniItem> getSectionDataMap(String section) {
@@ -164,7 +164,7 @@ public class IniFileLoader {
      *
      * @param section セクション指定
      * @return 読み込んだ結果の指定したセクション部、読み込んだ項目がない場合 {@code null} を返す
-     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)})を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public List<IniItem> getSectionDataList(String section) {
@@ -191,7 +191,7 @@ public class IniFileLoader {
      * @param section セクション指定
      * @param key     キー指定
      * @return 指定したセクション、指定したキーの値
-     * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
+     * @throws NotLoadedException ロード処理({@link #load(String)})を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
     public String getValue(String section, String key) {

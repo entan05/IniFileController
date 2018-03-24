@@ -10,7 +10,7 @@ public class IniItem {
     private String comment;
 
     /**
-     * コンストラクタ
+     * コンストラクタ<br>
      * 空のデータを作成する
      */
     public IniItem() {
@@ -18,11 +18,12 @@ public class IniItem {
     }
 
     /**
-     * コンストラクタ
+     * コンストラクタ<br>
      * コメントが空のデータを作成する
+     *
      * @param section セクション
-     * @param key キー
-     * @param value 値
+     * @param key     キー
+     * @param value   値
      */
     public IniItem(String section, String key, String value) {
         this(section, key, value, null);
@@ -30,9 +31,10 @@ public class IniItem {
 
     /**
      * コンストラクタ
+     *
      * @param section セクション
-     * @param key キー
-     * @param value 値
+     * @param key     キー
+     * @param value   値
      * @param comment コメント
      */
     public IniItem(String section, String key, String value, String comment) {
@@ -44,6 +46,7 @@ public class IniItem {
 
     /**
      * セクションを設定する
+     *
      * @param section セクション、グローバルセクションを設定する際は {@code null} を設定する
      */
     public void setSection(String section) {
@@ -52,6 +55,7 @@ public class IniItem {
 
     /**
      * セクションを取得する
+     *
      * @return セクション
      */
     public String getSection() {
@@ -60,6 +64,7 @@ public class IniItem {
 
     /**
      * キーを設定する
+     *
      * @param key キー
      */
     public void setKey(String key) {
@@ -68,6 +73,7 @@ public class IniItem {
 
     /**
      * キーを取得する
+     *
      * @return キー
      */
     public String getKey() {
@@ -76,6 +82,7 @@ public class IniItem {
 
     /**
      * 値を設定する
+     *
      * @param value 値
      */
     public void setValue(String value) {
@@ -84,6 +91,7 @@ public class IniItem {
 
     /**
      * 値を取得する
+     *
      * @return 値
      */
     public String getValue() {
@@ -92,6 +100,7 @@ public class IniItem {
 
     /**
      * コメントを設定する
+     *
      * @param comment コメント
      */
     public void setComment(String comment) {
@@ -100,6 +109,7 @@ public class IniItem {
 
     /**
      * コメントを取得する
+     *
      * @return コメント
      */
     public String getComment() {
