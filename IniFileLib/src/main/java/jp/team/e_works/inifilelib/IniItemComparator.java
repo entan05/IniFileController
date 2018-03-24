@@ -2,6 +2,9 @@ package jp.team.e_works.inifilelib;
 
 import java.util.Comparator;
 
+/**
+ * IniItemソート用Comparator
+ */
 public class IniItemComparator implements Comparator<IniItem> {
     @Override
     public int compare(IniItem i1, IniItem i2) {
