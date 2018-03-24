@@ -25,6 +25,11 @@ public class IniItemComparator implements Comparator<IniItem> {
             if (i2.getSection() == null) {
                 return 1;
             } else {
+                int sectionResult = i1Section.compareToIgnoreCase(i2.getSection());
+                if (sectionResult != 0) {
+                    return sectionResult;
+                }
+
                 String i1Key = i1.getKey();
                 if (i1Key != null) {
                     return i1Key.compareToIgnoreCase(i2.getKey());
