@@ -8,21 +8,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * IniFileを読み込むローダー
+ */
 public class IniFileLoader {
-    // HashMap<section, HashMap<key, value>>とする
-    private HashMap<String, HashMap<String, String>> mDataMap;
+    // HashMap<section, HashMap<key, IniItem>>とする
+    private HashMap<String, HashMap<String, IniItem>> mDataMap;
 
     // ファイルパス
     private String mFilePath;
 
     // load完了しているか
     private boolean mIsLoaded = false;
-
-
-    public IniFileLoader() {
-        mDataMap = new HashMap<>();
-    }
 
     /**
      * 指定したファイルをUTF-8のiniファイルとしてロードする
@@ -45,6 +44,8 @@ public class IniFileLoader {
     }
 
     private boolean loadProcess(String filePath) {
+        mIsLoaded = false;
+        mDataMap = new HashMap<>();
         try {
             FileReader fileReader = new FileReader(new File(filePath));
             BufferedReader br = new BufferedReader(fileReader);
@@ -55,7 +56,7 @@ public class IniFileLoader {
             // コメント
             String comment = null;
             // キーバリュー
-            HashMap<String, String> map = new HashMap<>();
+            HashMap<String, IniItem> map = new HashMap<>();
             while (line != null) {
                 // BOM取り除き処理
                 // todo
@@ -66,11 +67,9 @@ public class IniFileLoader {
                 // 空行
                 if (isEmpty(line)) {
                     // no process
-                    line = br.readLine();
-                    continue;
                 }
                 // コメント行
-                if (line.charAt(0) == '#') {
+                else if (line.charAt(0) == '#') {
                     String commentLine = line.substring(1).trim();
                     if (isEmpty(comment)) {
                         comment = commentLine;
@@ -78,30 +77,27 @@ public class IniFileLoader {
                         comment += "\n";
                         comment += commentLine;
                     }
-                    line = br.readLine();
-                    continue;
                 }
                 // セクション行
-                if (line.charAt(0) == '[' && line.charAt(line.length() - 1) == ']') {
+                else if (line.charAt(0) == '[' && line.charAt(line.length() - 1) == ']') {
                     section = line.substring(1, line.length() - 1);
                     map = new HashMap<>();
-                    line = br.readLine();
-                    continue;
                 }
                 // パラメータ行
-                if (line.length() >= 3 && line.contains("=") && line.length() > line.indexOf("=") + 1) {
+                else if (line.length() >= 3 && line.contains("=") && line.length() > line.indexOf("=") + 1) {
                     String key = line.substring(0, line.indexOf("="));
                     String value = line.substring(line.indexOf("=") + 1);
 
-                    map.put(key, value);
+                    IniItem item = new IniItem(section, key, value, comment);
+                    map.put(key, item);
                     mDataMap.put(section, map);
+                    comment = null;
                 }
 
                 line = br.readLine();
             }
             br.close();
         } catch (IOException e) {
-            mIsLoaded = false;
             return false;
         }
         mIsLoaded = true;
@@ -109,13 +105,13 @@ public class IniFileLoader {
     }
 
     /**
-     * 読み込んだ結果を (section, (key, value)) の {@link HashMap} で返す
+     * 読み込んだ結果を (section, (key, IniItem)) の {@link HashMap} で返す
      *
      * @return 読み込んだ結果の {@link HashMap} 、読み込んだ項目がない場合 {@code null} を返す
      * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
-    public HashMap<String, HashMap<String, String>> getAllDataMap() {
+    public HashMap<String, HashMap<String, IniItem>> getAllDataMap() {
         if (mIsLoaded) {
             return mDataMap;
         }
@@ -133,9 +129,9 @@ public class IniFileLoader {
         if (mIsLoaded) {
             ArrayList<IniItem> list = new ArrayList<>();
             for (String section : mDataMap.keySet()) {
-                HashMap<String, String> map = mDataMap.get(section);
+                HashMap<String, IniItem> map = mDataMap.get(section);
                 for (String key : map.keySet()) {
-                    list.add(new IniItem(section, key, map.get(key)));
+                    list.add(map.get(key));
                 }
             }
             if (list.size() <= 0) {
@@ -149,14 +145,14 @@ public class IniFileLoader {
     }
 
     /**
-     * 読み込んだ結果の指定したセクションを(key, value)の {@link HashMap} で返す
+     * 読み込んだ結果の指定したセクションを(key, IniItem)の {@link Map} で返す
      *
      * @param section セクション指定
      * @return 読み込んだ結果の指定したセクション部、読み込んだ項目がない場合 {@code null} を返す
      * @throws NotLoadedException ロード処理({@link #load(String)} )を行っていない場合、
      *                            もしくはIniファイルのロードに成功していない場合にthrowする
      */
-    public HashMap<String, String> getSectionDataMap(String section) {
+    public Map<String, IniItem> getSectionDataMap(String section) {
         if (mIsLoaded) {
             return mDataMap.get(section);
         }
@@ -174,11 +170,11 @@ public class IniFileLoader {
     public List<IniItem> getSectionDataList(String section) {
         if (mIsLoaded) {
             ArrayList<IniItem> list = null;
-            HashMap<String, String> map = mDataMap.get(section);
+            HashMap<String, IniItem> map = mDataMap.get(section);
             if (map != null) {
                 list = new ArrayList<>();
                 for (String key : map.keySet()) {
-                    list.add(new IniItem(section, key, map.get(key)));
+                    list.add(map.get(key));
                 }
             }
             if (list != null) {
@@ -200,9 +196,12 @@ public class IniFileLoader {
      */
     public String getValue(String section, String key) {
         if (mIsLoaded) {
-            HashMap<String, String> map = mDataMap.get(section);
+            HashMap<String, IniItem> map = mDataMap.get(section);
             if (map != null) {
-                return map.get(key);
+                IniItem item = map.get(key);
+                if (item != null) {
+                    return item.getValue();
+                }
             }
             return null;
         }
@@ -231,7 +230,7 @@ public class IniFileLoader {
      */
     public boolean containsKey(String section, String key) {
         if (mIsLoaded) {
-            HashMap<String, String> map = mDataMap.get(section);
+            HashMap<String, IniItem> map = mDataMap.get(section);
             return map != null && map.containsKey(key);
         }
         throw new NotLoadedException();
