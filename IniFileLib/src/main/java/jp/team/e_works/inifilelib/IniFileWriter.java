@@ -138,6 +138,8 @@ public class IniFileWriter {
 
                 isFirstLine = false;
             }
+
+            bw.close();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
