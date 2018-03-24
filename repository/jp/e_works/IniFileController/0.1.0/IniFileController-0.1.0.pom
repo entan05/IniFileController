@@ -4,5 +4,5 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jp.e_works</groupId>
   <artifactId>IniFileController</artifactId>
-  <version>0.0.7dev</version>
+  <version>0.1.0</version>
 </project>
